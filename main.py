@@ -1,6 +1,6 @@
 import requests
 import json
-from dumyJsonPlugin import DummyJsonPlugin
+from dummyJsonPlugin import DummyJsonPlugin
 from apiClient import save_evidence
 
 
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     auth_result = plugin.test_connectivity(name, password)
     
     if auth_result and "accessToken" in auth_result:
-        print("auth successful")
+        print("auth successful with user:" + name)
         
         # collect evidence
         print(f"collecting evidence with post limit of {post_limit})...")
