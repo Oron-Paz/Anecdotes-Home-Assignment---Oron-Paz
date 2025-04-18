@@ -5,7 +5,7 @@ import json
 response = requests.get("https://dummyjson.com/test")
 print (response.json())
 
-# test login with user
+# login with user / test connectivity
 def connectivity_test(username: str, password: str):
     payload = {
         "username": username,
@@ -62,21 +62,31 @@ def collect_evidence(accessToken):
         
         return posts
 
+    return {
+        "E1_user_details": collect_E1_user_details(),
+        "E2_posts": collect_E2_posts(),
+        "E3_posts_with_comments": collect_E3_posts_with_comments()
+    }
 
 
-    return collect_E1_user_details(), collect_E2_posts(), collect_E3_posts_with_comments()
+if __name__ == "__main__":
+    # get connection 
+    valid_login = connectivity_test("emilys", "emilyspass")
 
-valid_login = connectivity_test("emilys", "emilyspass")
-
-E1, E2 , E3= collect_evidence(valid_login['accessToken'])
-print(E1)
-print("---------------------------------------------------------------")
-print("---------------------------------------------------------------")
-print(E2)
-print("---------------------------------------------------------------")
-print("---------------------------------------------------------------")
-print(E3)
-
-
-#dont need this anymore
-#invalid_login = connectivity_test("wrong", "wrong")
+    if valid_login and "accessToken" in valid_login:
+        
+        evidence = collect_evidence(valid_login["accessToken"])
+        
+        # save evidence to files
+        with open("E1_user_details.json", "w") as f:
+            json.dump(evidence["E1_user_details"], f, indent=2)
+        
+        with open("E2_posts.json", "w") as f:
+            json.dump(evidence["E2_posts"], f, indent=2)
+        
+        with open("E3_posts_with_comments.json", "w") as f:
+            json.dump(evidence["E3_posts_with_comments"], f, indent=2)
+        
+        print("Evidence collection completed successfully!")
+    else:
+        print("Cannot collect evidence due to failed connectivity test.")
