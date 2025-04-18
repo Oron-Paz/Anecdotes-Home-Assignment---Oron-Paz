@@ -5,9 +5,7 @@ import json
 response = requests.get("https://dummyjson.com/test")
 print (response.json())
 
-username = "emilys"
-password = "emilyspass"
-
+# test login with user
 def connectivity_test(username: str, password: str):
     payload = {
         "username": username,
@@ -24,6 +22,7 @@ def connectivity_test(username: str, password: str):
         print(f"Response: {response.text}")
         return None
 
+# evidence collection (E1,E2,E3)
 def collect_evidence(accessToken):
     headers = {
         "Authorization": accessToken,
@@ -39,14 +38,26 @@ def collect_evidence(accessToken):
             return None
         
     def collect_E2_posts():
+        response = requests.get('https://dummyjson.com/posts/?limit=60', headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("posts", [])
+        else:
+            print(f"Failed to collect posts: {response.status_code}")
+            return []
+        
+    def collect_E3_posts_and_comments():
         pass
 
-    return collect_E1_userDetails()
+
+    return collect_E1_userDetails(), collect_E2_posts()
 
 valid_login = connectivity_test("emilys", "emilyspass")
 
-E1 = collect_evidence(valid_login['accessToken'])
+E1, E2 = collect_evidence(valid_login['accessToken'])
 print(E1)
+print("--------------------------------")
+print(E2)
 
 
 #dont need this anymore
