@@ -1,7 +1,7 @@
 import requests
 import json
 
-#tested api connection dont need this
+#tested api connection, dont need this but im keeping it so you can see my work process :)
 response = requests.get("https://dummyjson.com/test")
 print (response.json())
 
@@ -29,7 +29,7 @@ def collect_evidence(accessToken):
         "Content-Type": "application/json"
     }
 
-    def collect_E1_userDetails():
+    def collect_E1_user_details():
         response = requests.get('https://dummyjson.com/auth/me', headers=headers)
         if response.status_code == 200:
             return response.json()
@@ -46,18 +46,36 @@ def collect_evidence(accessToken):
             print(f"Failed to collect posts: {response.status_code}")
             return []
         
-    def collect_E3_posts_and_comments():
-        pass
+    def collect_E3_posts_with_comments():
+        posts = collect_E2_posts()
+
+        for post in posts:
+            post_id = post.get("id")
+            response = requests.get(f'https://dummyjson.com/posts/{post_id}/comments', headers=headers)
+            if response.status_code == 200:
+                comments_data = response.json()
+                # Add comments to the post
+                post["comments"] = comments_data.get("comments", [])
+            else:
+                print(f"Failed to get comments for post {post_id}: {response.status_code}")
+                post["comments"] = []
+        
+        return posts
 
 
-    return collect_E1_userDetails(), collect_E2_posts()
+
+    return collect_E1_user_details(), collect_E2_posts(), collect_E3_posts_with_comments()
 
 valid_login = connectivity_test("emilys", "emilyspass")
 
-E1, E2 = collect_evidence(valid_login['accessToken'])
+E1, E2 , E3= collect_evidence(valid_login['accessToken'])
 print(E1)
-print("--------------------------------")
+print("---------------------------------------------------------------")
+print("---------------------------------------------------------------")
 print(E2)
+print("---------------------------------------------------------------")
+print("---------------------------------------------------------------")
+print(E3)
 
 
 #dont need this anymore
